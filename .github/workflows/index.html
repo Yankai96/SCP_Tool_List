@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hub Tools 工具库</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-tools"></i> Hub Tools 工具库</h1>
+            <p class="subtitle">共 <span id="total-tools">0</span> 个工具</p>
+        </header>
+
+        <div class="search-section">
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="search-input" placeholder="搜索工具名称、描述或分类...">
+                <button id="clear-search" title="清除搜索">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="search-options">
+                <div class="search-filter">
+                    <label for="category-filter">分类筛选：</label>
+                    <select id="category-filter">
+                        <option value="">所有分类</option>
+                    </select>
+                </div>
+                
+                <div class="search-stats">
+                    显示 <span id="shown-tools">0</span> 个工具
+                </div>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <table id="tools-table">
+                <thead>
+                    <tr>
+                        <th data-sort="IDX">ID <i class="fas fa-sort"></i></th>
+                        <th data-sort="Tool Name">工具名称 <i class="fas fa-sort"></i></th>
+                        <th data-sort="Description">描述 <i class="fas fa-sort"></i></th>
+                        <th data-sort="category">分类 <i class="fas fa-sort"></i></th>
+                    </tr>
+                </thead>
+                <tbody id="table-body">
+                    <!-- 数据将通过JavaScript动态填充 -->
+                </tbody>
+            </table>
+            
+            <div id="no-results" style="display: none;">
+                <i class="fas fa-search fa-3x"></i>
+                <h3>未找到匹配的工具</h3>
+                <p>请尝试不同的搜索关键词</p>
+            </div>
+        </div>
+
+        <div class="pagination">
+            <button id="prev-page" disabled><i class="fas fa-chevron-left"></i> 上一页</button>
+            <div class="page-info">
+                <span id="page-num">1</span> / <span id="total-pages">1</span>
+            </div>
+            <button id="next-page" disabled>下一页 <i class="fas fa-chevron-right"></i></button>
+        </div>
+
+        <footer>
+            <p>最后更新: <span id="update-date">2024年</span></p>
+            <p class="data-info">数据来源: hub_tools2_func_labeled.csv | 共 <span id="total-rows">0</span> 行</p>
+        </footer>
+    </div>
+
+    <script src="data.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
