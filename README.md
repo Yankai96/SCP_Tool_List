@@ -24,19 +24,3 @@ A web-based interface for browsing and searching a comprehensive collection of b
 5. Select the main branch and root folder
 6. Click Save
 7. Your site will be published at `https://[your-username].github.io/[repository-name]`
-
-## Data Format
-
-The data is stored in `data.js` as a JavaScript array with the following structure:
-
-```javascript
-var toolsData = [
-    {
-        "IDX": 1,
-        "Tool Name": "tool_name",
-        "Description": "Tool description",
-        "category": "Category name",
-        "Server Name": "Server name"
-    },
-    // ... more tools
-];
