@@ -1,6 +1,6 @@
-# Bioinformatics Tools Database
+# SCP Tool Database
 
-A web-based interface for browsing and searching a comprehensive collection of bioinformatics tools, databases, and model services.
+A web-based interface for browsing and searching a comprehensive collection of SCP tools, databases, and model services.
 
 ## Features
 
@@ -9,18 +9,3 @@ A web-based interface for browsing and searching a comprehensive collection of b
 - **Sorting**: Sort by IDX, tool name, category, or server name
 - **Responsive design**: Works on desktop, tablet, and mobile devices
 - **Visual indicators**: Color-coded categories for easy scanning
-
-## Deployment to GitHub Pages
-
-1. Create a new GitHub repository
-2. Upload all files to the repository:
-   - `index.html`
-   - `style.css`
-   - `script.js`
-   - `data.js`
-   - `README.md`
-3. Go to repository Settings > Pages
-4. Under "Source", select "Deploy from a branch"
-5. Select the main branch and root folder
-6. Click Save
-7. Your site will be published at `https://[your-username].github.io/[repository-name]`
