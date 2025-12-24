@@ -3,115 +3,89 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SCP Tool Database</title>
+    <title>Bioinformatics Tools Database</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class="container">
         <header>
-            <h1><i class="fas fa-tools"></i> SCP Tool Database</h1>
-            <p class="subtitle">Explore and search through <span id="total-tools">650+</span> bioinformatics tools and services</p>
+            <h1><i class="fas fa-dna"></i> Bioinformatics Tools Database</h1>
+            <p class="subtitle">Explore computational tools, databases, and model services for bioinformatics research</p>
         </header>
 
-        <div class="dashboard">
-            <div class="stats-card">
-                <div class="stat">
-                    <h3 id="total-count">650</h3>
-                    <p>Total Tools</p>
-                </div>
-                <div class="stat">
-                    <h3 id="server-count">12</h3>
-                    <p>Servers</p>
-                </div>
-                <div class="stat">
-                    <h3 id="category-count">10</h3>
-                    <p>Categories</p>
-                </div>
-                <div class="stat">
-                    <h3 id="visible-count">650</h3>
-                    <p>Currently Displayed</p>
-                </div>
-            </div>
-        </div>
-
         <div class="controls">
-            <div class="search-container">
-                <div class="search-box">
-                    <i class="fas fa-search"></i>
-                    <input type="text" id="search-input" placeholder="Search by tool name, description, server, or category...">
-                </div>
-                <div class="search-filters">
-                    <div class="filter">
-                        <label for="server-filter">Filter by Server:</label>
-                        <select id="server-filter">
-                            <option value="all">All Servers</option>
-                            <!-- Server options will be populated by JavaScript -->
-                        </select>
-                    </div>
-                    <div class="filter">
-                        <label for="category-filter">Filter by Category:</label>
-                        <select id="category-filter">
-                            <option value="all">All Categories</option>
-                            <!-- Category options will be populated by JavaScript -->
-                        </select>
-                    </div>
-                    <button id="reset-filters" class="reset-btn">
-                        <i class="fas fa-redo"></i> Reset Filters
-                    </button>
-                </div>
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" placeholder="Search by tool name, description, category, or server...">
+                <button id="clearSearch" class="clear-btn" title="Clear search">
+                    <i class="fas fa-times"></i>
+                </button>
             </div>
-        </div>
 
-        <div class="main-content">
-            <div class="tools-container">
-                <div class="tools-header">
-                    <h2>Available Tools <span id="filtered-count">(650)</span></h2>
-                    <div class="view-controls">
-                        <button id="grid-view" class="view-btn active"><i class="fas fa-th"></i> Grid</button>
-                        <button id="list-view" class="view-btn"><i class="fas fa-list"></i> List</button>
-                    </div>
+            <div class="filters">
+                <div class="filter-group">
+                    <label for="categoryFilter"><i class="fas fa-filter"></i> Category:</label>
+                    <select id="categoryFilter">
+                        <option value="">All Categories</option>
+                    </select>
                 </div>
                 
-                <div class="tools-grid" id="tools-grid">
-                    <!-- Tool cards will be populated by JavaScript -->
+                <div class="filter-group">
+                    <label for="serverFilter"><i class="fas fa-server"></i> Server:</label>
+                    <select id="serverFilter">
+                        <option value="">All Servers</option>
+                    </select>
                 </div>
                 
-                <div class="no-results" id="no-results" style="display: none;">
-                    <i class="fas fa-search"></i>
-                    <h3>No Tools Found</h3>
-                    <p>Try adjusting your search or filters to find what you're looking for.</p>
+                <div class="filter-group">
+                    <label for="sortSelect"><i class="fas fa-sort"></i> Sort by:</label>
+                    <select id="sortSelect">
+                        <option value="idx">IDX (Default)</option>
+                        <option value="name">Tool Name</option>
+                        <option value="category">Category</option>
+                        <option value="server">Server Name</option>
+                    </select>
                 </div>
             </div>
             
-            <div class="sidebar">
-                <div class="sidebar-section">
-                    <h3><i class="fas fa-filter"></i> Active Filters</h3>
-                    <div class="active-filters" id="active-filters">
-                        <p class="no-filters">No active filters</p>
-                    </div>
-                </div>
-                
-                <div class="sidebar-section">
-                    <h3><i class="fas fa-server"></i> Top Servers</h3>
-                    <div class="server-list" id="server-list">
-                        <!-- Server list will be populated by JavaScript -->
-                    </div>
-                </div>
-                
-                <div class="sidebar-section">
-                    <h3><i class="fas fa-tags"></i> Top Categories</h3>
-                    <div class="category-list" id="category-list">
-                        <!-- Category list will be populated by JavaScript -->
-                    </div>
-                </div>
+            <div class="stats">
+                <span id="totalCount">Total: 653 tools</span>
+                <span id="filteredCount">Showing: 653 tools</span>
             </div>
         </div>
 
+        <div class="table-container">
+            <table id="toolsTable">
+                <thead>
+                    <tr>
+                        <th>IDX</th>
+                        <th>Tool Name</th>
+                        <th>Description</th>
+                        <th>Category</th>
+                        <th>Server Name</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    <!-- Data will be populated by JavaScript -->
+                </tbody>
+            </table>
+        </div>
+
+        <div class="no-results" id="noResults">
+            <i class="fas fa-search"></i>
+            <h3>No tools found</h3>
+            <p>Try adjusting your search or filters</p>
+        </div>
+
         <footer>
-            <p>Bioinformatics Tools Database &copy; 2023 | <span id="tool-count-footer">650</span> tools from <span id="server-count-footer">12</span> servers</p>
-            <p class="footer-note">Data source: toolsData.js | Last updated: October 2023</p>
+            <p>Bioinformatics Tools Database • Last updated: December 2024 • Total tools: <span id="footerCount">653</span></p>
+            <p class="github-link">
+                <a href="https://github.com/yourusername/your-repo" target="_blank">
+                    <i class="fab fa-github"></i> View on GitHub
+                </a>
+            </p>
         </footer>
     </div>
 
