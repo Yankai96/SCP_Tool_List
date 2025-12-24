@@ -1,251 +1,373 @@
-// 声明一个变量来存储工具数据，初始为空数组
-let toolsData = [];
-
-// 当页面加载完成后初始化应用
+// Wait for DOM to be fully loaded
 document.addEventListener('DOMContentLoaded', function() {
-    console.log("DOM加载完成，开始初始化应用...");
+    // Get DOM elements
+    const toolsGrid = document.getElementById('tools-grid');
+    const searchInput = document.getElementById('search-input');
+    const serverFilter = document.getElementById('server-filter');
+    const categoryFilter = document.getElementById('category-filter');
+    const resetFiltersBtn = document.getElementById('reset-filters');
+    const gridViewBtn = document.getElementById('grid-view');
+    const listViewBtn = document.getElementById('list-view');
+    const noResults = document.getElementById('no-results');
+    const activeFiltersContainer = document.getElementById('active-filters');
+    const serverList = document.getElementById('server-list');
+    const categoryList = document.getElementById('category-list');
     
-    // 检查toolsData是否已从data.js加载
-    console.log("toolsData长度:", window.toolsData ? window.toolsData.length : "未定义");
+    // Stats elements
+    const totalTools = document.getElementById('total-tools');
+    const totalCount = document.getElementById('total-count');
+    const serverCount = document.getElementById('server-count');
+    const categoryCount = document.getElementById('category-count');
+    const visibleCount = document.getElementById('visible-count');
+    const filteredCount = document.getElementById('filtered-count');
+    const toolCountFooter = document.getElementById('tool-count-footer');
+    const serverCountFooter = document.getElementById('server-count-footer');
     
-    // 如果window.toolsData存在，则使用它
-    if (window.toolsData) {
-        toolsData = window.toolsData;
-        console.log("已从data.js加载数据:", toolsData.length, "条记录");
-        initApp();
-    } else {
-        console.error("未找到toolsData，请确保data.js已正确加载");
-        // 显示错误信息
-        document.getElementById('toolsContainer').innerHTML = `
-            <div class="error-message">
-                <i class="fas fa-exclamation-triangle"></i>
-                <h3>数据加载错误</h3>
-                <p>无法加载工具数据。请确保data.js文件存在且格式正确。</p>
-                <p>检查浏览器控制台获取更多信息。</p>
-            </div>
-        `;
-    }
-});
-
-// 初始化应用
-function initApp() {
-    console.log("初始化应用...");
-    
-    // 获取DOM元素
-    const toolsContainer = document.getElementById('toolsContainer');
-    const searchInput = document.getElementById('searchInput');
-    const categoryFilter = document.getElementById('categoryFilter');
-    const serverFilter = document.getElementById('serverFilter');
-    const resetFiltersBtn = document.getElementById('resetFilters');
-    const noResults = document.getElementById('noResults');
-    
-    // 统计元素
-    const totalToolsEl = document.getElementById('totalTools');
-    const visibleToolsEl = document.getElementById('visibleTools');
-    const serverCountEl = document.getElementById('serverCount');
-    const categoryCountEl = document.getElementById('categoryCount');
-    
-    // 初始化变量
+    // Initialize variables
     let filteredTools = [...toolsData];
-    let categories = [];
-    let servers = [];
+    let currentView = 'grid';
     
-    // 提取唯一的类别和服务器
-    function extractUniqueValues() {
-        console.log("提取唯一值...");
+    // Initialize the application
+    function init() {
+        // Set initial stats
+        updateStats();
         
-        // 提取类别
-        const categorySet = new Set();
-        toolsData.forEach(tool => {
-            if (tool.category && tool.category.trim() !== '') {
-                categorySet.add(tool.category);
-            }
-        });
-        categories = Array.from(categorySet).sort();
-        console.log("找到类别:", categories.length, "个");
+        // Populate server and category filter dropdowns
+        populateFilters();
         
-        // 提取服务器
-        const serverSet = new Set();
-        toolsData.forEach(tool => {
-            if (tool['Server Name'] && tool['Server Name'].trim() !== '') {
-                serverSet.add(tool['Server Name']);
-            }
-        });
-        servers = Array.from(serverSet).sort();
-        console.log("找到服务器:", servers.length, "个");
+        // Populate server and category lists in sidebar
+        populateSidebarLists();
+        
+        // Display all tools initially
+        renderTools();
+        
+        // Set up event listeners
+        setupEventListeners();
     }
     
-    // 填充筛选器下拉菜单
+    // Set up all event listeners
+    function setupEventListeners() {
+        // Search input
+        searchInput.addEventListener('input', filterTools);
+        
+        // Filter dropdowns
+        serverFilter.addEventListener('change', filterTools);
+        categoryFilter.addEventListener('change', filterTools);
+        
+        // Reset filters button
+        resetFiltersBtn.addEventListener('click', resetFilters);
+        
+        // View controls
+        gridViewBtn.addEventListener('click', () => switchView('grid'));
+        listViewBtn.addEventListener('click', () => switchView('list'));
+        
+        // Server and category list items in sidebar
+        serverList.addEventListener('click', handleServerListClick);
+        categoryList.addEventListener('click', handleCategoryListClick);
+    }
+    
+    // Populate server and category filter dropdowns
     function populateFilters() {
-        console.log("填充筛选器...");
+        // Get unique servers and categories
+        const servers = [...new Set(toolsData.map(tool => tool['Server Name']))].sort();
+        const categories = [...new Set(toolsData.map(tool => tool.category))].sort();
         
-        // 填充类别筛选器
-        categoryFilter.innerHTML = '<option value="">All Categories</option>';
-        categories.forEach(category => {
-            const option = document.createElement('option');
-            option.value = category;
-            option.textContent = category;
-            categoryFilter.appendChild(option);
-        });
+        // Clear existing options (except the first "All" option)
+        while (serverFilter.options.length > 1) {
+            serverFilter.remove(1);
+        }
         
-        // 填充服务器筛选器
-        serverFilter.innerHTML = '<option value="">All Servers</option>';
+        while (categoryFilter.options.length > 1) {
+            categoryFilter.remove(1);
+        }
+        
+        // Add server options
         servers.forEach(server => {
             const option = document.createElement('option');
             option.value = server;
             option.textContent = server;
             serverFilter.appendChild(option);
         });
-    }
-    
-    // 渲染工具卡片
-    function renderTools() {
-        console.log("渲染工具卡片...", filteredTools.length, "个工具");
         
-        toolsContainer.innerHTML = '';
-        
-        if (filteredTools.length === 0) {
-            noResults.style.display = 'block';
-            return;
-        }
-        
-        noResults.style.display = 'none';
-        
-        filteredTools.forEach(tool => {
-            const toolCard = createToolCard(tool);
-            toolsContainer.appendChild(toolCard);
+        // Add category options
+        categories.forEach(category => {
+            const option = document.createElement('option');
+            option.value = category;
+            option.textContent = category;
+            categoryFilter.appendChild(option);
         });
     }
     
-    // 创建工具卡片
-    function createToolCard(tool) {
-        const card = document.createElement('div');
-        card.className = 'tool-card';
+    // Populate server and category lists in sidebar
+    function populateSidebarLists() {
+        // Clear existing lists
+        serverList.innerHTML = '';
+        categoryList.innerHTML = '';
         
-        // 确保所有字段都有值
-        const toolId = tool.IDX || 'N/A';
-        const toolName = tool['Tool Name'] || 'Unnamed Tool';
-        const description = tool.Description || 'No description available';
-        const category = tool.category || 'Uncategorized';
-        const serverName = tool['Server Name'] || 'Unknown Server';
+        // Count tools per server
+        const serverCounts = {};
+        toolsData.forEach(tool => {
+            const server = tool['Server Name'];
+            serverCounts[server] = (serverCounts[server] || 0) + 1;
+        });
         
-        // 创建卡片内容
-        card.innerHTML = `
-            <div class="card-header">
-                <span class="tool-id">ID: ${escapeHtml(toolId)}</span>
-                <h3 class="tool-name">${escapeHtml(toolName)}</h3>
-                <p class="tool-description">${escapeHtml(description)}</p>
-            </div>
-            <div class="card-body">
-                <div class="tool-meta">
-                    <span class="category-badge">
-                        <i class="fas fa-tag"></i>
-                        ${escapeHtml(category)}
-                    </span>
-                    <span class="server-badge">
-                        <i class="fas fa-server"></i>
-                        ${escapeHtml(serverName)}
-                    </span>
-                </div>
-                <div class="tool-details">
-                    <p><strong>Tool Name:</strong> ${escapeHtml(toolName)}</p>
-                    <p><strong>Category:</strong> ${escapeHtml(category)}</p>
-                    <p><strong>Server:</strong> ${escapeHtml(serverName)}</p>
-                </div>
-            </div>
-        `;
+        // Count tools per category
+        const categoryCounts = {};
+        toolsData.forEach(tool => {
+            const category = tool.category;
+            categoryCounts[category] = (categoryCounts[category] || 0) + 1;
+        });
         
-        return card;
+        // Sort servers by count (descending) and take top 8
+        const topServers = Object.entries(serverCounts)
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 8);
+        
+        // Sort categories by count (descending) and take top 8
+        const topCategories = Object.entries(categoryCounts)
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 8);
+        
+        // Populate server list
+        topServers.forEach(([server, count]) => {
+            const serverItem = document.createElement('div');
+            serverItem.className = 'server-item';
+            serverItem.dataset.server = server;
+            serverItem.innerHTML = `
+                <span class="server-name">${server}</span>
+                <span class="server-count">${count}</span>
+            `;
+            serverList.appendChild(serverItem);
+        });
+        
+        // Populate category list
+        topCategories.forEach(([category, count]) => {
+            const categoryItem = document.createElement('div');
+            categoryItem.className = 'category-item';
+            categoryItem.dataset.category = category;
+            categoryItem.innerHTML = `
+                <span class="category-name">${category}</span>
+                <span class="category-count">${count}</span>
+            `;
+            categoryList.appendChild(categoryItem);
+        });
     }
     
-    // 更新统计信息
-    function updateStats() {
-        totalToolsEl.textContent = toolsData.length;
-        visibleToolsEl.textContent = filteredTools.length;
-        serverCountEl.textContent = servers.length;
-        categoryCountEl.textContent = categories.length;
-        
-        console.log("统计信息更新:");
-        console.log("- 总工具数:", toolsData.length);
-        console.log("- 可见工具数:", filteredTools.length);
-        console.log("- 服务器数:", servers.length);
-        console.log("- 类别数:", categories.length);
-    }
-    
-    // 过滤工具
+    // Filter tools based on search input and filters
     function filterTools() {
         const searchTerm = searchInput.value.toLowerCase();
-        const selectedCategory = categoryFilter.value;
         const selectedServer = serverFilter.value;
+        const selectedCategory = categoryFilter.value;
         
-        console.log("过滤工具:", {
-            searchTerm,
-            selectedCategory,
-            selectedServer
-        });
-        
+        // Filter tools
         filteredTools = toolsData.filter(tool => {
-            // 检查搜索词
-            const toolName = (tool['Tool Name'] || '').toLowerCase();
-            const toolDesc = (tool.Description || '').toLowerCase();
-            const matchesSearch = !searchTerm || 
-                toolName.includes(searchTerm) ||
-                toolDesc.includes(searchTerm);
+            // Check search term
+            const matchesSearch = searchTerm === '' || 
+                tool['Tool Name'].toLowerCase().includes(searchTerm) ||
+                tool.Description.toLowerCase().includes(searchTerm) ||
+                tool['Server Name'].toLowerCase().includes(searchTerm) ||
+                tool.category.toLowerCase().includes(searchTerm);
             
-            // 检查类别筛选
-            const toolCategory = tool.category || '';
-            const matchesCategory = !selectedCategory || 
-                toolCategory === selectedCategory;
+            // Check server filter
+            const matchesServer = selectedServer === 'all' || tool['Server Name'] === selectedServer;
             
-            // 检查服务器筛选
-            const toolServer = tool['Server Name'] || '';
-            const matchesServer = !selectedServer || 
-                toolServer === selectedServer;
+            // Check category filter
+            const matchesCategory = selectedCategory === 'all' || tool.category === selectedCategory;
             
-            return matchesSearch && matchesCategory && matchesServer;
+            return matchesSearch && matchesServer && matchesCategory;
         });
         
-        console.log("过滤后剩余:", filteredTools.length, "个工具");
+        // Update active filters display
+        updateActiveFilters(searchTerm, selectedServer, selectedCategory);
+        
+        // Render filtered tools
         renderTools();
+        
+        // Update stats
         updateStats();
     }
     
-    // 设置事件监听器
-    function setupEventListeners() {
-        console.log("设置事件监听器...");
+    // Update active filters display
+    function updateActiveFilters(searchTerm, selectedServer, selectedCategory) {
+        // Clear current active filters
+        activeFiltersContainer.innerHTML = '';
         
-        // 搜索输入事件
-        searchInput.addEventListener('input', filterTools);
+        // Add search term filter if present
+        if (searchTerm) {
+            const searchFilter = document.createElement('div');
+            searchFilter.className = 'filter-tag';
+            searchFilter.innerHTML = `
+                <span>Search: "${searchTerm}"</span>
+                <button class="remove-filter" data-type="search"><i class="fas fa-times"></i></button>
+            `;
+            activeFiltersContainer.appendChild(searchFilter);
+        }
         
-        // 筛选器变更事件
-        categoryFilter.addEventListener('change', filterTools);
-        serverFilter.addEventListener('change', filterTools);
+        // Add server filter if not "all"
+        if (selectedServer !== 'all') {
+            const serverFilterTag = document.createElement('div');
+            serverFilterTag.className = 'filter-tag';
+            serverFilterTag.innerHTML = `
+                <span>Server: ${selectedServer}</span>
+                <button class="remove-filter" data-type="server"><i class="fas fa-times"></i></button>
+            `;
+            activeFiltersContainer.appendChild(serverFilterTag);
+        }
         
-        // 重置筛选器按钮
-        resetFiltersBtn.addEventListener('click', function() {
-            searchInput.value = '';
-            categoryFilter.value = '';
-            serverFilter.value = '';
-            filterTools();
+        // Add category filter if not "all"
+        if (selectedCategory !== 'all') {
+            const categoryFilterTag = document.createElement('div');
+            categoryFilterTag.className = 'filter-tag';
+            categoryFilterTag.innerHTML = `
+                <span>Category: ${selectedCategory}</span>
+                <button class="remove-filter" data-type="category"><i class="fas fa-times"></i></button>
+            `;
+            activeFiltersContainer.appendChild(categoryFilterTag);
+        }
+        
+        // If no active filters, show message
+        if (activeFiltersContainer.children.length === 0) {
+            const noFilters = document.createElement('p');
+            noFilters.className = 'no-filters';
+            noFilters.textContent = 'No active filters';
+            activeFiltersContainer.appendChild(noFilters);
+        } else {
+            // Add event listeners to remove filter buttons
+            const removeButtons = activeFiltersContainer.querySelectorAll('.remove-filter');
+            removeButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const filterType = this.dataset.type;
+                    
+                    if (filterType === 'search') {
+                        searchInput.value = '';
+                    } else if (filterType === 'server') {
+                        serverFilter.value = 'all';
+                    } else if (filterType === 'category') {
+                        categoryFilter.value = 'all';
+                    }
+                    
+                    filterTools();
+                });
+            });
+        }
+    }
+    
+    // Render tools to the grid
+    function renderTools() {
+        // Clear current tools
+        toolsGrid.innerHTML = '';
+        
+        // Show/hide no results message
+        if (filteredTools.length === 0) {
+            noResults.style.display = 'block';
+            toolsGrid.style.display = 'none';
+            return;
+        } else {
+            noResults.style.display = 'none';
+            toolsGrid.style.display = 'grid';
+        }
+        
+        // Apply view class
+        if (currentView === 'list') {
+            toolsGrid.classList.add('list-layout');
+        } else {
+            toolsGrid.classList.remove('list-layout');
+        }
+        
+        // Create tool cards
+        filteredTools.forEach(tool => {
+            const toolCard = document.createElement('div');
+            toolCard.className = `tool-card ${currentView}-view`;
+            
+            // Truncate description if too long
+            let description = tool.Description;
+            if (description.length > 200 && currentView === 'grid') {
+                description = description.substring(0, 200) + '...';
+            }
+            
+            toolCard.innerHTML = `
+                <div class="tool-main">
+                    <div class="tool-idx">IDX: ${tool.IDX}</div>
+                    <h3 class="tool-name">${tool['Tool Name']}</h3>
+                    <p class="tool-description">${description}</p>
+                </div>
+                <div class="tool-meta">
+                    <span class="tool-category">
+                        <i class="fas fa-tag"></i> ${tool.category}
+                    </span>
+                    <span class="tool-server">
+                        <i class="fas fa-server"></i> ${tool['Server Name']}
+                    </span>
+                </div>
+            `;
+            
+            toolsGrid.appendChild(toolCard);
         });
     }
     
-    // 辅助函数：转义HTML以防止XSS攻击
-    function escapeHtml(text) {
-        if (text === null || text === undefined) {
-            return '';
+    // Switch between grid and list view
+    function switchView(view) {
+        currentView = view;
+        
+        // Update active button
+        if (view === 'grid') {
+            gridViewBtn.classList.add('active');
+            listViewBtn.classList.remove('active');
+        } else {
+            listViewBtn.classList.add('active');
+            gridViewBtn.classList.remove('active');
         }
-        const div = document.createElement('div');
-        div.textContent = text.toString();
-        return div.innerHTML;
+        
+        // Re-render tools with new view
+        renderTools();
     }
     
-    // 执行初始化步骤
-    console.log("开始应用初始化...");
-    extractUniqueValues();
-    populateFilters();
-    renderTools();
-    updateStats();
-    setupEventListeners();
-    console.log("应用初始化完成！");
-}
+    // Reset all filters
+    function resetFilters() {
+        searchInput.value = '';
+        serverFilter.value = 'all';
+        categoryFilter.value = 'all';
+        
+        filterTools();
+    }
+    
+    // Handle server list item clicks in sidebar
+    function handleServerListClick(e) {
+        const serverItem = e.target.closest('.server-item');
+        if (serverItem) {
+            const server = serverItem.dataset.server;
+            serverFilter.value = server;
+            filterTools();
+        }
+    }
+    
+    // Handle category list item clicks in sidebar
+    function handleCategoryListClick(e) {
+        const categoryItem = e.target.closest('.category-item');
+        if (categoryItem) {
+            const category = categoryItem.dataset.category;
+            categoryFilter.value = category;
+            filterTools();
+        }
+    }
+    
+    // Update statistics
+    function updateStats() {
+        // Count unique servers and categories
+        const uniqueServers = new Set(toolsData.map(tool => tool['Server Name'])).size;
+        const uniqueCategories = new Set(toolsData.map(tool => tool.category)).size;
+        
+        // Update all stat elements
+        totalTools.textContent = `${toolsData.length}+`;
+        totalCount.textContent = toolsData.length;
+        serverCount.textContent = uniqueServers;
+        categoryCount.textContent = uniqueCategories;
+        visibleCount.textContent = filteredTools.length;
+        filteredCount.textContent = `(${filteredTools.length})`;
+        toolCountFooter.textContent = toolsData.length;
+        serverCountFooter.textContent = uniqueServers;
+    }
+    
+    // Initialize the application
+    init();
+});
