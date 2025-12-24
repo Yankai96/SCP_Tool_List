@@ -1,39 +1,42 @@
-# Hub Tools 工具库网页
+# Bioinformatics Tools Database
 
-这是一个展示Hub Tools工具库的GitHub Pages页面，包含完整的搜索和筛选功能。
+A web-based interface for browsing and searching a comprehensive collection of bioinformatics tools, databases, and model services.
 
-## 功能特性
+## Features
 
-- **搜索功能**: 支持按工具名称、描述和分类进行搜索
-- **分类筛选**: 可以按工具分类进行筛选
-- **排序功能**: 点击表头可以按列排序
-- **分页显示**: 每页显示50个工具，支持翻页
-- **响应式设计**: 适配各种屏幕尺寸
-- **关键词高亮**: 搜索结果中的关键词会高亮显示
+- **Search functionality**: Search by tool name, description, category, or server name
+- **Filtering**: Filter tools by category and server name
+- **Sorting**: Sort by IDX, tool name, category, or server name
+- **Responsive design**: Works on desktop, tablet, and mobile devices
+- **Visual indicators**: Color-coded categories for easy scanning
 
-## 文件结构
+## Deployment to GitHub Pages
 
-- `index.html`: 主页面HTML文件
-- `style.css`: 样式文件
-- `script.js`: JavaScript交互脚本
-- `data.js`: 工具数据（从CSV转换而来）
+1. Create a new GitHub repository
+2. Upload all files to the repository:
+   - `index.html`
+   - `style.css`
+   - `script.js`
+   - `data.js`
+   - `README.md`
+3. Go to repository Settings > Pages
+4. Under "Source", select "Deploy from a branch"
+5. Select the main branch and root folder
+6. Click Save
+7. Your site will be published at `https://[your-username].github.io/[repository-name]`
 
-## 部署到GitHub Pages
+## Data Format
 
-1. 在GitHub上创建新仓库
-2. 将所有文件上传到仓库
-3. 在仓库设置中启用GitHub Pages
-4. 选择主分支作为源
-5. 访问 `https://[您的用户名].github.io/[仓库名]/` 查看页面
+The data is stored in `data.js` as a JavaScript array with the following structure:
 
-## 本地运行
-
-只需在浏览器中打开 `index.html` 文件即可。
-
-## 数据更新
-
-如果要更新工具数据，请按照以下步骤操作：
-
-1. 将新的CSV文件转换为JavaScript数组
-2. 替换 `data.js` 文件中的 `tools` 数组
-3. 提交更改到GitHub仓库
+```javascript
+var toolsData = [
+    {
+        "IDX": 1,
+        "Tool Name": "tool_name",
+        "Description": "Tool description",
+        "category": "Category name",
+        "Server Name": "Server name"
+    },
+    // ... more tools
+];
