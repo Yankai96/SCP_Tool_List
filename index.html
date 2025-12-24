@@ -3,98 +3,119 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tools Hub</title>
+    <title>Bioinformatics Tools Database</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class="container">
         <header>
-            <h1><i class="fas fa-tools"></i> Tools Hub</h1>
-            <p class="subtitle">A comprehensive collection of scientific and computational tools</p>
-            
-            <!-- 搜索和筛选区域 -->
-            <div class="search-filter-section">
+            <h1><i class="fas fa-tools"></i> Bioinformatics Tools Database</h1>
+            <p class="subtitle">Explore and search through <span id="total-tools">650+</span> bioinformatics tools and services</p>
+        </header>
+
+        <div class="dashboard">
+            <div class="stats-card">
+                <div class="stat">
+                    <h3 id="total-count">650</h3>
+                    <p>Total Tools</p>
+                </div>
+                <div class="stat">
+                    <h3 id="server-count">12</h3>
+                    <p>Servers</p>
+                </div>
+                <div class="stat">
+                    <h3 id="category-count">10</h3>
+                    <p>Categories</p>
+                </div>
+                <div class="stat">
+                    <h3 id="visible-count">650</h3>
+                    <p>Currently Displayed</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <div class="search-container">
                 <div class="search-box">
                     <i class="fas fa-search"></i>
-                    <input type="text" id="searchInput" placeholder="Search tools by name or description...">
+                    <input type="text" id="search-input" placeholder="Search by tool name, description, server, or category...">
                 </div>
-                
-                <div class="filter-container">
-                    <!-- 类别筛选 -->
-                    <div class="filter-group">
-                        <label for="categoryFilter"><i class="fas fa-filter"></i> Filter by Category:</label>
-                        <select id="categoryFilter">
-                            <option value="">All Categories</option>
-                            <!-- 类别选项将由JavaScript动态生成 -->
+                <div class="search-filters">
+                    <div class="filter">
+                        <label for="server-filter">Filter by Server:</label>
+                        <select id="server-filter">
+                            <option value="all">All Servers</option>
+                            <!-- Server options will be populated by JavaScript -->
                         </select>
                     </div>
-                    
-                    <!-- 服务器筛选 -->
-                    <div class="filter-group">
-                        <label for="serverFilter"><i class="fas fa-server"></i> Filter by Server:</label>
-                        <select id="serverFilter">
-                            <option value="">All Servers</option>
-                            <!-- 服务器选项将由JavaScript动态生成 -->
+                    <div class="filter">
+                        <label for="category-filter">Filter by Category:</label>
+                        <select id="category-filter">
+                            <option value="all">All Categories</option>
+                            <!-- Category options will be populated by JavaScript -->
                         </select>
                     </div>
-                    
-                    <!-- 重置按钮 -->
-                    <button id="resetFilters" class="reset-btn">
+                    <button id="reset-filters" class="reset-btn">
                         <i class="fas fa-redo"></i> Reset Filters
                     </button>
                 </div>
             </div>
-        </header>
-
-        <!-- 统计信息 -->
-        <div class="stats-bar">
-            <div class="stat">
-                <span class="stat-number" id="totalTools">0</span>
-                <span class="stat-label">Total Tools</span>
-            </div>
-            <div class="stat">
-                <span class="stat-number" id="visibleTools">0</span>
-                <span class="stat-label">Visible Tools</span>
-            </div>
-            <div class="stat">
-                <span class="stat-number" id="serverCount">0</span>
-                <span class="stat-label">Servers</span>
-            </div>
-            <div class="stat">
-                <span class="stat-number" id="categoryCount">0</span>
-                <span class="stat-label">Categories</span>
-            </div>
         </div>
 
-        <!-- 工具卡片容器 -->
-        <div id="toolsContainer" class="tools-grid">
-            <!-- 工具卡片将由JavaScript动态生成 -->
-        </div>
-
-        <!-- 无结果提示 -->
-        <div id="noResults" class="no-results" style="display: none;">
-            <i class="fas fa-search"></i>
-            <h3>No tools found</h3>
-            <p>Try adjusting your search or filters to find what you're looking for.</p>
+        <div class="main-content">
+            <div class="tools-container">
+                <div class="tools-header">
+                    <h2>Available Tools <span id="filtered-count">(650)</span></h2>
+                    <div class="view-controls">
+                        <button id="grid-view" class="view-btn active"><i class="fas fa-th"></i> Grid</button>
+                        <button id="list-view" class="view-btn"><i class="fas fa-list"></i> List</button>
+                    </div>
+                </div>
+                
+                <div class="tools-grid" id="tools-grid">
+                    <!-- Tool cards will be populated by JavaScript -->
+                </div>
+                
+                <div class="no-results" id="no-results" style="display: none;">
+                    <i class="fas fa-search"></i>
+                    <h3>No Tools Found</h3>
+                    <p>Try adjusting your search or filters to find what you're looking for.</p>
+                </div>
+            </div>
+            
+            <div class="sidebar">
+                <div class="sidebar-section">
+                    <h3><i class="fas fa-filter"></i> Active Filters</h3>
+                    <div class="active-filters" id="active-filters">
+                        <p class="no-filters">No active filters</p>
+                    </div>
+                </div>
+                
+                <div class="sidebar-section">
+                    <h3><i class="fas fa-server"></i> Top Servers</h3>
+                    <div class="server-list" id="server-list">
+                        <!-- Server list will be populated by JavaScript -->
+                    </div>
+                </div>
+                
+                <div class="sidebar-section">
+                    <h3><i class="fas fa-tags"></i> Top Categories</h3>
+                    <div class="category-list" id="category-list">
+                        <!-- Category list will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
         </div>
 
         <footer>
-            <p>Tools Hub &copy; 2024 | <span id="currentDate"></span></p>
+            <p>Bioinformatics Tools Database &copy; 2023 | <span id="tool-count-footer">650</span> tools from <span id="server-count-footer">12</span> servers</p>
+            <p class="footer-note">Data source: toolsData.js | Last updated: October 2023</p>
         </footer>
     </div>
 
-    <!-- 引入JavaScript文件 -->
     <script src="data.js"></script>
     <script src="script.js"></script>
-    
-    <script>
-        // 显示当前日期
-        document.getElementById('currentDate').textContent = new Date().toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-        });
-    </script>
 </body>
 </html>
