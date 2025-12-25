@@ -99,7 +99,7 @@ var toolsData = [
   },
   {
     "IDX": 15,
-    "Tool Name": "convert_smiles_to_other_format",
+    "Tool Name": "convert_smiles_to_format",
     "Description": "Convert a list of SMILES strings or a list of SMI file paths into other molecular formats.",
     "category": "Computational Tools",
     "Server Name": "DrugSDA-Tool"
@@ -148,7 +148,7 @@ var toolsData = [
   },
   {
     "IDX": 22,
-    "Tool Name": "retrieve_smiles_from_name",
+    "Tool Name": "retrieve_smiles_by_compoundname",
     "Description": "Retrieve SMILES strings from PubChem using compound names.",
     "category": "Databases",
     "Server Name": "DrugSDA-Tool"
@@ -302,14 +302,14 @@ var toolsData = [
   },
   {
     "IDX": 44,
-    "Tool Name": "small_file_to_base64",
+    "Tool Name": "server_file_to_base64",
     "Description": "Convert files smaller than 10MB to Base64 encoding.",
     "category": "Computational Tools",
     "Server Name": "DrugSDA-Tool"
   },
   {
     "IDX": 45,
-    "Tool Name": "base64_to_file",
+    "Tool Name": "base64_to_server_file",
     "Description": "Convert Base64 encoding back to a file.",
     "category": "Computational Tools",
     "Server Name": "DrugSDA-Tool"
