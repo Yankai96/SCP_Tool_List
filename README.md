@@ -12,5 +12,5 @@ A web-based interface for browsing and searching a comprehensive collection of S
 
 For details about Science Context Protocol, please refer:
 <div align="center">
-[![GitHub](https://img.shields.io/badge/GitHub-000000?logo=github&logoColor=white)](https://github.com/InternScience/scp)&#160;
+https://github.com/InternScience/scp
 </div>
